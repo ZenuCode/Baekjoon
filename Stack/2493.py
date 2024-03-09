@@ -21,3 +21,23 @@ def solution():
     return " ".join(map(str, ans))
 
 print(solution())
+
+"""
+n = int(input())
+arr = list(map(int, input().split()))
+stack = []
+ans = []
+
+for i in range(n):
+    while stack:
+        if stack[-1][1] < arr[i]:
+            stack.pop()
+        else:
+            ans.append(stack[-1][0] + 1)
+            break
+    if not stack:
+        ans.append(0)
+    stack.append([i, arr[i]])
+
+print(*ans)
+"""
