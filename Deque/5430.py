@@ -38,3 +38,37 @@ def solution():
             print("error")
 
 solution() 
+
+"""
+import sys
+input = sys.stdin.readline
+
+n = int(input())
+
+for _ in range(n):
+    cmd = input()
+    cmd = cmd.replace("RR", "")
+    num = int(input())
+    arr = list(input().strip()[1:-1].split(","))
+    reverse = False
+    front = 0
+    back = 0
+
+    for i in cmd:
+        if i == "R":
+            reverse = not reverse
+        elif i == "D":
+            if reverse:
+                back += 1
+            else:
+                front += 1
+    
+    if front + back <= num:
+        if reverse:
+            arr.reverse()
+            print("[" + ",".join(arr[back:num - front]) + "]")
+        else:
+            print("[" + ",".join(arr[front:num - back]) + "]")
+    else:
+        print("error")
+"""
