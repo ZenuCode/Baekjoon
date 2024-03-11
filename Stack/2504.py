@@ -1,30 +1,29 @@
-import sys
-text = sys.stdin.readline().rstrip()
-print(text)
+word = input()
+print(word)
 stack = []
-tmp = 1
 ans = 0
+tmp = 1
 
-for i in text:
-    if i == "(":
-        stack.append(i)
+for i in range(len(word)):
+    if word[i] == '(':
+        stack.append(word[i])
         tmp *= 2
-    elif i == "[":
-        stack.append(i)
+    elif word[i] == '[':
+        stack.append(word[i])
         tmp *= 3
-    elif i == ")":
+    elif word[i] == ')':
         if not stack or stack[-1] == '[':
             ans = 0
             break
-        if i == "(":
+        if word[i - 1] == '(':
             ans += tmp
         tmp //= 2
         stack.pop()
-    elif i == "]":
+    else:
         if not stack or stack[-1] == '(':
             ans = 0
             break
-        if i == "[":
+        if word[i - 1] == '[':
             ans += tmp
         tmp //= 3
         stack.pop()
