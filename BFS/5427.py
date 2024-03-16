@@ -1,28 +1,53 @@
-from collections import deque
 import sys
+from collections import deque
 input = sys.stdin.readline
+dir = [[0, 1], [0, -1], [-1, 0], [1, 0]] #udlr
 
-dx = [1, 2, 2, 1, -1, -2, -2, -1]
-dy = [2, 1, -1, -2, -2, -1, 1, 2] #clockwise from top-right
-
-n = int(input().rstrip())
-for _ in range(n):
-    dim = int(input())
-    cX, cY = map(int, input().split())
-    tX, tY = map(int, input().split())
-    graph = [[-1] * dim for _ in range(dim)]
-    que = deque([[cX, cY]])
-    graph[cX][cY] = 0
-
-    while que:
-        x, y = que.popleft()
-        if x == tX and y == tY:
-            print(graph[x][y])
-            break
+def bfs(pos, fire, graph):
+    fire_que = deque()
+    pos_que = deque()
+    fire_que.extend(fire)
+    pos_que.append(pos)
+    cnt = 0
+    while pos_que:
+        cnt += 1
+        n = len(fire_que)
+        for _ in range(n):
+            x, y = fire_que.popleft()
+            for i in range(4):
+                ux = x + dir[i][0]
+                uy = y + dir[i][1]
+                if 0 <= ux < row and 0 <= uy < col:
+                    if graph[ux][uy] != "#" and graph[ux][uy] != '*':
+                        graph[ux][uy] = '*'
+                        fire_que.append((ux, uy))
         
-        for i in range(8):
-            ux = dx[i] + x
-            uy = dy[i] + y
-            if 0 <= ux < dim and 0 <= uy < dim and graph[ux][uy] == -1:
-                graph[ux][uy] = graph[x][y] + 1
-                que.append([ux, uy])
+        n = len(pos_que)
+        for _ in range(n):
+            x, y = pos_que.popleft()
+            for i in range(4):
+                ux = x + dir[i][0]
+                uy = y + dir[i][1]
+                if 0 <= ux < row and 0 <= uy < col:
+                    if graph[ux][uy] == '.':
+                        pos_que.append((ux, uy))
+                        graph[ux][uy] = '*'
+                else:
+                    return cnt
+    
+    return "IMPOSSIBLE"
+
+for _ in range(int(input())):
+    col, row = map(int, input().split())
+    graph = [list(input().rstrip()) for _ in range(row)]
+    pos, fire = (), []
+    for i in range(row):
+        for j in range(col):
+            if graph[i][j] == '@':
+                pos = (i, j)
+            if graph[i][j] == '*':
+                fire.append((i, j))
+    if pos[0] == 0 or pos[1] == 0 or pos[0] == row - 1 or pos[1] == col - 1:
+        print(1)
+    else:
+        print(bfs(pos, fire, graph))
