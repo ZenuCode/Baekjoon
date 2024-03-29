@@ -1,64 +1,53 @@
+import sys
+input = sys.stdin.readline
 from itertools import combinations
 from collections import deque
- 
- 
-def solution():
-    flowers = 0
-    spread_board = [[[0, 0] for i in range(m)] for j in range(n)]
-    q = deque()
-    for i in selected_r:
-        x, y = candi[i]
-        spread_board[x][y][1] = RED
-        q.append([x, y])
-    for i in selected_g:
-        x, y = candi[i]
-        spread_board[x][y][1] = GREEN
-        q.append([x, y])
+dy = [1,-1,0,0]
+dx = [0,0,1,-1]
 
-    while q:
-        x, y = q.popleft()
-        if spread_board[x][y][1] == FLOWER: continue
-        for dx, dy in zip(dxs, dys):
-            nx, ny = x+dx, y+dy
-            if nx<0 or nx>=n or ny<0 or ny>=m: continue
-            if board[nx][ny] == 0: continue # 호수
-            if spread_board[nx][ny][1] == EMPTY:
-                spread_board[nx][ny][0], spread_board[nx][ny][1] = spread_board[x][y][0]+1, spread_board[x][y][1]
-                q.append([nx, ny])
-            elif spread_board[nx][ny][1] == RED:
-                if spread_board[x][y][1] == GREEN and spread_board[x][y][0]+1 == spread_board[nx][ny][0]:
-                    spread_board[nx][ny][1] = FLOWER
-                    flowers += 1
-            elif spread_board[nx][ny][1] == GREEN:
-                if spread_board[x][y][1] == RED and spread_board[x][y][0]+1 == spread_board[nx][ny][0]:
-                    spread_board[nx][ny][1] = FLOWER
-                    flowers += 1
-    return flowers
+def BFS():
+  flower = 0
+  while dq:
+    y,x,ylast,xlast,time,color = dq.popleft()
+    if visited[ylast][xlast] == 1:  #전에 꽃이 폈으면
+      continue
+    if visited[y][x]:
+      if visited[y][x] == (time,-color):
+        visited[y][x] = 1
+        flower += 1
+      continue
+    visited[y][x] = (time,color)
+    for i in range(4):
+      y1,x1 = y+dy[i],x+dx[i]
+      if N>y1>=0 and M>x1>=0 and garden[y1][x1]:
+        dq.append((y1,x1,y,x,time+1,color))
+  return flower
 
-if __name__ == '__main__':
-    n, m, g, r = map(int, input().split())
-    board = [list(map(int, input().split())) for _ in range(n)]
-    max_flower = 0
+N,M,G,R = map(int,input().split())
 
-    EMPTY = 0
-    RED = 1
-    GREEN = 2
-    FLOWER = 3
+garden = []
+for i in range(N):
+  garden.append([*map(int,input().split())])
 
-    dxs = (0, 1, 0, -1) # 동 남 서 북
-    dys = (1, 0, -1, 0)
+spread = []
+for i in range(N):
+  for j in range(M):
+    if garden[i][j] == 2:
+      spread.append((i,j))
 
-    candi = []
-    for i in range(n):
-        for j in range(m):
-            if board[i][j] == 2: candi.append([i, j])
+result = 0
+for GRlist in combinations(spread,G+R):
+  for Glist in combinations(GRlist,G):
+    visited = [[0]*M for i in range(N)]
+    dq = deque()
+    for y,x in Glist:
+      visited[y][x] = 1
+      dq.append((y,x,y,x,1,1))  #y,x,ylast,xlast,time,color
+    for y,x in GRlist:
+      if visited[y][x]:
+        continue
+      dq.append((y,x,y,x,1,-1))
+    visited = [[0]*M for i in range(N)]
+    result = max(result,BFS())
 
-    for c1 in combinations(range(len(candi)), r+g):
-        for c2 in combinations(range(r+g), r):
-            selected_r = []
-            selected_g = []
-            for i in range(r+g):
-                if i in c2: selected_r.append(c1[i])
-                else: selected_g.append(c1[i])
-            max_flower = max(max_flower, solution())
-    print(max_flower)
+print(result)
