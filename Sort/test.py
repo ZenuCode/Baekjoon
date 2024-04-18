@@ -1,16 +1,3 @@
-import sys
-input = sys.stdin.readline
-arr = []
-
-for i in range(int(input())):
-    arr.append(int(input()))
-
-arr.sort()
-for i in arr:
-    print(i)
-
-
-"""
 import heapq
 import sys
 input = sys.stdin.readline
@@ -23,7 +10,3 @@ for _ in range(n):
 
 for _ in range(n):
     print(heapq.heappop(heap))
-
-
-
-"""
